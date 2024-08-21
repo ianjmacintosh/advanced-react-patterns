@@ -6,6 +6,7 @@ import {Switch} from '../switch'
 
 // 🐨 create your ToggleContext context here
 const ToggleContext = React.createContext(false)
+ToggleContext.displayName = 'ToggleContext'
 
 function Toggle({children}) {
   const [on, setOn] = React.useState(false)
@@ -21,7 +22,12 @@ function Toggle({children}) {
 }
 
 function useToggle() {
-  return React.useContext(ToggleContext)
+  const context = React.useContext(ToggleContext)
+
+  if (context === undefined) {
+    throw new Error('This component must be wrapped in <Toggle />')
+  }
+  return context
 }
 
 // 🐨 we'll still get the children from props (as it's passed to us by the

@@ -42,18 +42,6 @@ function ToggleButton({...props}) {
   return <Switch on={on} onClick={toggle} {...props} />
 }
 
-function App() {
-  return (
-    <div>
-      <Toggle>
-        <ToggleOn>The button is on</ToggleOn>
-        <ToggleOff>The button is off</ToggleOff>
-        <div>
-          <ToggleButton />
-        </div>
-      </Toggle>
-    </div>
-  )
-}
+const App = () => <ToggleButton />
 
 export default App
