@@ -20,6 +20,10 @@ function Toggle({children}) {
   )
 }
 
+function useToggle() {
+  return React.useContext(ToggleContext)
+}
+
 // 🐨 we'll still get the children from props (as it's passed to us by the
 // developers using our component), but we'll get `on` implicitly from
 // ToggleContext now
@@ -28,19 +32,19 @@ function Toggle({children}) {
 // 💰 `const context = React.useContext(ToggleContext)`
 // 📜 https://react.dev/reference/react/useContext
 function ToggleOn({children}) {
-  const {on} = React.useContext(ToggleContext)
+  const {on} = useToggle()
   return on ? children : null
 }
 
 // 🐨 do the same thing to this that you did to the ToggleOn component
 function ToggleOff({children}) {
-  const {on} = React.useContext(ToggleContext)
+  const {on} = useToggle()
   return on ? null : children
 }
 
 // 🐨 get `on` and `toggle` from the ToggleContext with `useContext`
 function ToggleButton({...props}) {
-  const {on, toggle} = React.useContext(ToggleContext)
+  const {on, toggle} = useToggle()
 
   return <Switch on={on} onClick={toggle} {...props} />
 }
