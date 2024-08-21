@@ -7,6 +7,19 @@ import {Switch} from '../switch'
 // 🐨 create your ToggleContext context here
 const ToggleContext = React.createContext(false)
 
+function Toggle({children}) {
+  const [on, setOn] = React.useState(false)
+  const toggle = () => setOn(!on)
+
+  // 🐨 remove all this 💣 and instead return <ToggleContext.Provider> where
+  // the value is an object that has `on` and `toggle` on it.
+  return (
+    <ToggleContext.Provider value={{on, toggle}}>
+      {children}
+    </ToggleContext.Provider>
+  )
+}
+
 // 🐨 we'll still get the children from props (as it's passed to us by the
 // developers using our component), but we'll get `on` implicitly from
 // ToggleContext now
@@ -27,23 +40,24 @@ function ToggleOff({children}) {
 
 // 🐨 get `on` and `toggle` from the ToggleContext with `useContext`
 function ToggleButton({...props}) {
-  const [on, setOn] = React.useState(false)
-  const toggle = () => setOn(!on)
+  const {on, toggle} = React.useContext(ToggleContext)
 
+  return <Switch on={on} onClick={toggle} {...props} />
+}
+
+function App() {
   return (
-    <ToggleContext.Provider value={{on, toggle}}>
-      <div>
+    <div>
+      <Toggle>
         <ToggleOn>The button is on</ToggleOn>
         <ToggleOff>The button is off</ToggleOff>
         <div>
-          <Switch on={on} onClick={toggle} {...props} />
+          <ToggleButton />
         </div>
-      </div>
-    </ToggleContext.Provider>
+      </Toggle>
+    </div>
   )
 }
-
-const App = () => <ToggleButton />
 
 export default App
 
