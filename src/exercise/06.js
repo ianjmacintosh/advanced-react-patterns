@@ -29,6 +29,34 @@ function toggleReducer(state, {type, initialState}) {
   }
 }
 
+const useControlledSwitchWarning = reference => {
+  const {current: oldReference} = React.useRef(reference)
+
+  React.useEffect(() => {
+    warning(
+      oldReference === reference,
+      oldReference
+        ? "This was controlled before... but now it's not?"
+        : "This was uncontrolled before, now you're changing your mind?",
+    )
+  })
+}
+
+const useNonReadOnlyInputWithValueWithoutOnChangeHandler = (
+  value,
+  handler,
+  readOnly,
+) => {
+  React.useEffect(() => {
+    if (value) {
+      warning(
+        handler || readOnly,
+        'Warning: Failed prop type: You provided a `on` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.',
+      )
+    }
+  }, [value, handler, readOnly])
+}
+
 function useToggle({
   initialOn = false,
   reducer = toggleReducer,
@@ -43,25 +71,12 @@ function useToggle({
   const onIsControlled = controlledOn != null
   const hasOnChange = typeof onChange !== 'undefined'
 
-  const {current: onWasControlled} = React.useRef(onIsControlled)
-
-  React.useEffect(() => {
-    warning(
-      onWasControlled === onIsControlled,
-      onWasControlled
-        ? "This was controlled before... but now it's not?"
-        : "This was uncontrolled before, now you're changing your mind?",
-    )
-  })
-
-  React.useEffect(() => {
-    if (onIsControlled) {
-      warning(
-        hasOnChange || readOnly,
-        'Warning: Failed prop type: You provided a `on` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.',
-      )
-    }
-  }, [hasOnChange, onIsControlled, readOnly])
+  useControlledSwitchWarning(onIsControlled)
+  useNonReadOnlyInputWithValueWithoutOnChangeHandler(
+    onIsControlled,
+    hasOnChange,
+    readOnly,
+  )
 
   // 🐨 Replace the next line with `const on = ...` which should be `controlledOn` if
   // `onIsControlled`, otherwise, it should be `state.on`.
@@ -177,7 +192,7 @@ function App() {
       <hr />
       <div>
         <div>Uncontrolled Toggle:</div>
-        <Toggle />
+        <Toggle on={true} />
       </div>
     </div>
   )
