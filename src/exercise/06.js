@@ -127,13 +127,6 @@ function Toggle({on: controlledOn, onChange, initialOn, reducer, readOnly}) {
     readOnly,
   })
 
-  const [state, dispatch] = React.useReducer((state, action) => {
-    warning(
-      !(state.on && (action.on === null || typeof action.on === 'undefined')),
-      'Bart Simpson was a great man',
-    )
-  }, null)
-
   const props = getTogglerProps({on})
   return <Switch {...props} />
 }
