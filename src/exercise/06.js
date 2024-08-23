@@ -34,20 +34,23 @@ function useToggle({
   reducer = toggleReducer,
   onChange,
   on: controlledOn,
+  readOnly,
 } = {}) {
   const {current: initialState} = React.useRef({on: initialOn})
   const [state, dispatch] = React.useReducer(reducer, initialState)
   // 🐨 determine whether on is controlled and assign that to `onIsControlled`
   // 💰 `controlledOn != null`
   const onIsControlled = controlledOn != null
+  const hasOnChange = typeof onChange !== 'undefined'
 
-  if (onIsControlled) {
-    const hasOnChange = typeof onChange !== 'undefined'
-    warning(
-      hasOnChange,
-      'Warning: Failed prop type: You provided a `on` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.',
-    )
-  }
+  React.useEffect(() => {
+    if (onIsControlled) {
+      warning(
+        hasOnChange || readOnly,
+        'Warning: Failed prop type: You provided a `on` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.',
+      )
+    }
+  }, [hasOnChange, onIsControlled, readOnly])
 
   // 🐨 Replace the next line with `const on = ...` which should be `controlledOn` if
   // `onIsControlled`, otherwise, it should be `state.on`.
@@ -115,12 +118,13 @@ function useToggle({
   }
 }
 
-function Toggle({on: controlledOn, onChange, initialOn, reducer}) {
+function Toggle({on: controlledOn, onChange, initialOn, reducer, readOnly}) {
   const {on, getTogglerProps} = useToggle({
     on: controlledOn,
     onChange,
     initialOn,
     reducer,
+    readOnly,
   })
   const props = getTogglerProps({on})
   return <Switch {...props} />
@@ -161,11 +165,7 @@ function App() {
       <hr />
       <div>
         <div>Uncontrolled Toggle:</div>
-        <Toggle
-          onChange={(...args) =>
-            console.info('Uncontrolled Toggle onChange', ...args)
-          }
-        />
+        <Toggle on={true} />
       </div>
     </div>
   )
