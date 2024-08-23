@@ -43,6 +43,17 @@ function useToggle({
   const onIsControlled = controlledOn != null
   const hasOnChange = typeof onChange !== 'undefined'
 
+  const {current: onWasControlled} = React.useRef(onIsControlled)
+
+  React.useEffect(() => {
+    warning(
+      onWasControlled === onIsControlled,
+      onWasControlled
+        ? "This was controlled before... but now it's not?"
+        : "This was uncontrolled before, now you're changing your mind?",
+    )
+  })
+
   React.useEffect(() => {
     if (onIsControlled) {
       warning(
@@ -166,7 +177,7 @@ function App() {
       <hr />
       <div>
         <div>Uncontrolled Toggle:</div>
-        <Toggle on={true} />
+        <Toggle />
       </div>
     </div>
   )
